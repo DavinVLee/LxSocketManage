@@ -45,5 +45,10 @@
     count ++;
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [self btnPressed:nil];
+}
+
 
 @end

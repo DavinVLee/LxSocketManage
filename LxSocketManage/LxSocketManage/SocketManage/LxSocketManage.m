@@ -195,6 +195,7 @@
 {
     NSLog(@"客户端--已经连接到%@:%d",host,port);
     self.connectStatus = SocketConnetEd;
+    [self.socket readDataWithTimeout:-1 tag:0];
 }
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err
@@ -227,6 +228,7 @@
         {
             [self.reconnectTimer invalidate];
             self.reconnectTimer = nil;
+            
         }
             break;
             case SocketConneting:
@@ -237,6 +239,8 @@
             case SocketClosed:
         {
             if (!_reconnectTimer) {
+                [_beatTimer invalidate];
+                _beatTimer = nil;
                 _reconnectTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                                                    target:self selector:@selector(reConnectSocket)
                                                                  userInfo:nil

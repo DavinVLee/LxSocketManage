@@ -121,11 +121,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499669651.298216"
+            timestampString = "499672714.576333"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "239"
-            endingLineNumber = "239"
+            startingLineNumber = "242"
+            endingLineNumber = "242"
             landmarkName = "-setConnectStatus:"
             landmarkType = "7">
          </BreakpointContent>
@@ -137,11 +137,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499669651.298216"
+            timestampString = "499672714.576333"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "261"
-            endingLineNumber = "261"
+            startingLineNumber = "265"
+            endingLineNumber = "265"
             landmarkName = "-reConnectSocket"
             landmarkType = "7">
          </BreakpointContent>
