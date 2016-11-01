@@ -21,6 +21,10 @@
  */
 @property (assign, nonatomic) SocketType type;
 /**
+ * 连接状态
+ */
+@property (assign, nonatomic) SocketStatus connectStatus;
+/**
  * 获取信息后回调方法
  */
 @property (weak, nonatomic) id<LxSocketManageDelegate>delegate;

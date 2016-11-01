@@ -39,7 +39,9 @@
 }
 - (IBAction)btnPressed:(id)sender {
     static int count = 1;
-    [[LxSocketManage sharedInstance] sendMessage:[NSString stringWithFormat:@"发送信息%d",count] type:SocketSendMsgNormal];
+    NSString *msg = [NSString stringWithFormat:@"发送信息%d",count];
+    self.label.text = msg;
+    [[LxSocketManage sharedInstance] sendMessage:msg type:SocketSendMsgNormal];
     count ++;
 }
 

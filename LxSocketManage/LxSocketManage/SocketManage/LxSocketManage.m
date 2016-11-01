@@ -19,6 +19,18 @@
  * 当前已连接socket容器
  */
 @property (strong, nonatomic) NSMutableArray <LxSocketModel *>*socketModelArray;
+/**
+ * 串行队列
+ */
+@property (strong, nonatomic) dispatch_queue_t msgSendQueue;
+/**
+ * 心跳定时器
+ */
+@property (strong, nonatomic) NSTimer *beatTimer;
+/**
+ * 重连定时器
+ */
+@property (strong, nonatomic) NSTimer *reconnectTimer;
 
 @end
 
@@ -33,6 +45,15 @@
         instance = [[self alloc] init];
     });
     return instance;
+}
+
+- (instancetype)init
+
+{
+    if (self == [super init]) {
+        _msgSendQueue = dispatch_queue_create("msgSendQueue", NULL);
+    }
+    return self;
 }
 
 - (NSMutableArray *)socketModelArray
@@ -60,6 +81,12 @@
                                           error:nil];
         self.type = SocketClient;
     }
+    if (initSuccess) {
+        self.connectStatus = SocketConnetEd;
+    }else
+    {
+        self.connectStatus = SocketClosed;
+    }
     
     return initSuccess;
 }
@@ -72,36 +99,53 @@
 
 - (void)sendMessage:(NSString *)msg type:(SocketSendMsgType )type
 {
-    NSData *msgData = [msg dataUsingEncoding:NSUTF8StringEncoding];
-    if (self.type == SocketServer) {
-        for (LxSocketModel *model in self.socketModelArray) {
-            [model.socket writeData:msgData withTimeout:1 tag:type];
-            [model.socket readDataWithTimeout:-1 tag:0];
+    
+    dispatch_async(self.msgSendQueue, ^{
+        NSMutableDictionary *msgInfo = [NSMutableDictionary dictionaryWithObject:msg forKey:@"message"];
+        [msgInfo setObject:@(type) forKey:@"tag"];
+        
+        NSError *error = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:msgInfo
+                                                           options:NSJSONWritingPrettyPrinted
+                                                             error:&error];
+        
+        if (self.type == SocketServer) {
+            for (LxSocketModel *model in self.socketModelArray) {
+                [model.socket writeData:jsonData withTimeout:1 tag:0];
+                [model.socket readDataWithTimeout:-1 tag:0];
+            }
+        }else
+        {
+            [self.socket writeData:jsonData withTimeout:1 tag:0];
+            [self.socket readDataWithTimeout:-1 tag:0];
         }
-    }else
-    {
-        [self.socket writeData:msgData withTimeout:1 tag:type];
-        [self.socket readDataWithTimeout:-1 tag:0];
-    }
+ 
+    });
     
 }
 
 #pragma mark - SocketDelegate
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
-    NSString *msgStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    NSString *msgStr = info[@"message"];
     NSLog(@"收到消息%@",msgStr);
-    switch (tag) {
+    NSInteger type = [info[@"tag"] integerValue];
+    switch (type) {
         case SocketSendMsgNormal:
         {
             if (self.type == SocketServer) {
                 for (LxSocketModel *model in self.socketModelArray) {
                     if (model.socket != sock) {
-                        [model.socket writeData:data withTimeout:-1 tag:tag];
+                        [model.socket writeData:data withTimeout:-1 tag:0];
                     }else
                     {
-                        NSData *callBackData = [@"成功收到信息" dataUsingEncoding:NSUTF8StringEncoding];
-                        [model.socket writeData:callBackData withTimeout:1 tag:SocketSendMsgReceiveCallBack];
+                        NSDictionary *callBackInfo = @{@"message" : @"成功收到信息",
+                                                       @"tag"     : @(SocketSendMsgReceiveCallBack)};
+                        NSData *callBackData = [NSJSONSerialization dataWithJSONObject:callBackInfo
+                                                                               options:NSJSONWritingPrettyPrinted error:nil];
+                        [model.socket writeData:callBackData withTimeout:1 tag:0];
                     }
                 }
             }
@@ -117,23 +161,119 @@
         default:
             break;
     }
-
+    [self.socket readDataWithTimeout:-1 tag:0];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket
 {
+    self.connectStatus = SocketConnetEd;
     NSLog(@"服务端--新的连接");
     LxSocketModel *model = [[LxSocketModel alloc] init];
     model.socket = newSocket;
-    model.ipAddress = newSocket.localHost;
-    [self.socketModelArray addObject:model];
+    model.ipAddress = newSocket.connectedHost;//客户端Ip
     [sock readDataWithTimeout:-1 tag:0];
     [newSocket readDataWithTimeout:-1 tag:0];
+    
+    
+    NSInteger index = -1;
+    
+    for (int i = 0; i < self.socketModelArray.count; i ++) {
+        LxSocketModel *localModel = self.socketModelArray[i];
+        if ([localModel.ipAddress isEqualToString:model.ipAddress]) {
+            index = i;
+        }
+    }
+    if (index >= 0) {
+        [self.socketModelArray replaceObjectAtIndex:index withObject:model];
+    }else
+    {
+        [self.socketModelArray addObject:model];
+    }
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
 {
     NSLog(@"客户端--已经连接到%@:%d",host,port);
+    self.connectStatus = SocketConnetEd;
+}
+
+- (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err
+{
+    NSLog(@"失去连接");
+    if (sock == self.socket) {
+       self.connectStatus = SocketClosed;
+    }else
+    {
+        if ([sock isKindOfClass:[NSNull class]]  && sock != nil) {
+            NSInteger removeIndex = -1;
+            for (LxSocketModel *model in self.socketModelArray) {
+                if ([model.ipAddress isEqualToString:sock.connectedHost]) {
+                    removeIndex = [self.socketModelArray indexOfObject:model];
+                }
+            }
+            if (removeIndex >= 0) {
+                [self.socketModelArray removeObjectAtIndex:removeIndex];
+            }
+        }
+    }
+    
+}
+
+- (void)setConnectStatus:(SocketStatus)connectStatus
+{
+    _connectStatus = connectStatus;
+    switch (connectStatus) {
+        case SocketConnetEd:
+        {
+            [self.reconnectTimer invalidate];
+            self.reconnectTimer = nil;
+        }
+            break;
+            case SocketConneting:
+        {
+            
+        }
+            break;
+            case SocketClosed:
+        {
+            if (!_reconnectTimer) {
+                _reconnectTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                                   target:self selector:@selector(reConnectSocket)
+                                                                 userInfo:nil
+                                                                  repeats:YES];
+                [[NSRunLoop mainRunLoop] addTimer:self.reconnectTimer forMode:NSRunLoopCommonModes];
+            }
+
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark - FUNCTION
+- (void)reConnectSocket
+{
+    NSError *error = nil;
+    if (self.type == SocketServer && !self.socket.isConnected && self.connectStatus == SocketClosed) {
+        if ([self.socket acceptOnPort:LxSocketPort error:&error]) {
+            self.connectStatus = SocketConnetEd;
+            [self.reconnectTimer invalidate];
+            self.reconnectTimer = nil;
+        }
+    }else if(self.type == SocketClient && !self.socket.isConnected && self.connectStatus == SocketClosed)
+    {
+        if ([self.socket connectToHost:LxSocketHost onPort:LxSocketPort error:&error]) {
+            self.connectStatus = SocketConnetEd;
+            [self.reconnectTimer invalidate];
+            self.reconnectTimer = nil;
+        }
+    }
+}
+
+- (void)sendBeat
+{
+    
 }
 
 @end

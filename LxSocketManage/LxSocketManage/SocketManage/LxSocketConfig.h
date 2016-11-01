@@ -24,8 +24,9 @@
  * 发送消息类别
  */
 typedef NS_ENUM(NSInteger, SocketSendMsgType) {
-    SocketSendMsgNormal      = 0,
-    SocketSendMsgReceiveCallBack = 1,
+    SocketSendMsgNormal      = 1,//正常文本信息
+    SocketSendMsgReceiveCallBack = 2,//接受到消息后成功回调
+    SocketSendMsgBeatMsg     = 3,//心跳包发送
 };
 
 /**
@@ -35,5 +36,15 @@ typedef NS_ENUM(NSInteger, SocketType) {
     SocketServer = 0,
     SocketClient = 1,
 };
+
+/**
+ * 链接状态
+ */
+typedef NS_ENUM(NSInteger, SocketStatus){
+    SocketClosed    = 0,
+    SocketConneting = 1,
+    SocketConnetEd  = 2,
+};
+
 
 #endif /* LxSocketConfig_h */

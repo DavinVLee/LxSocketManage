@@ -10,11 +10,59 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499638937.565844"
+            timestampString = "499660403.466955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "127"
+            endingLineNumber = "127"
+            landmarkName = "-socket:didReadData:withTag:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
+            timestampString = "499660403.466955"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
+            landmarkName = "-socket:didReadData:withTag:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
+            timestampString = "499660403.466955"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
+            landmarkName = "-socket:didReadData:withTag:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
+            timestampString = "499660403.466955"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
             landmarkName = "-sendMessage:type:"
             landmarkType = "7">
             <Locations>
@@ -22,31 +70,46 @@
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "-[LxSocketManage sendMessage:type:]"
+                  symbolName = "__35-[LxSocketManage sendMessage:type:]_block_invoke"
                   moduleName = "LxSocketManage"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/lixiang/workSpace/LxSocketManage/LxSocketManage/LxSocketManage/SocketManage/LxSocketManage.m"
-                  timestampString = "499657891.046835"
+                  timestampString = "499669651.380848"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "77"
-                  endingLineNumber = "77"
-                  offsetFromSymbolStart = "172">
+                  startingLineNumber = "123"
+                  endingLineNumber = "123"
+                  offsetFromSymbolStart = "1056">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "-[LxSocketManage sendMessage:type:]"
+                  symbolName = "__copy_helper_block_.54"
                   moduleName = "LxSocketManage"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/lixiang/workSpace/LxSocketManage/LxSocketManage/LxSocketManage/SocketManage/LxSocketManage.m"
-                  timestampString = "499657891.048487"
+                  timestampString = "499669651.382262"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "77"
-                  endingLineNumber = "77"
-                  offsetFromSymbolStart = "188">
+                  startingLineNumber = "123"
+                  endingLineNumber = "123"
+                  offsetFromSymbolStart = "116">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__destroy_helper_block_.55"
+                  moduleName = "LxSocketManage"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lixiang/workSpace/LxSocketManage/LxSocketManage/LxSocketManage/SocketManage/LxSocketManage.m"
+                  timestampString = "499669651.38348"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "123"
+                  endingLineNumber = "123"
+                  offsetFromSymbolStart = "64">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -58,12 +121,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499657823.227464"
+            timestampString = "499669651.298216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "-sendMessage:type:"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "-setConnectStatus:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -74,12 +137,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499657823.227464"
+            timestampString = "499669651.298216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "-socket:didReadData:withTag:"
+            startingLineNumber = "261"
+            endingLineNumber = "261"
+            landmarkName = "-reConnectSocket"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -90,60 +153,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499657823.227464"
+            timestampString = "499669272.703367"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "103"
-            endingLineNumber = "103"
-            landmarkName = "-socket:didReadData:withTag:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499638946.315726"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "70"
-            endingLineNumber = "70"
-            landmarkName = "-socket:didWriteDataWithTag:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499657823.227464"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
-            landmarkName = "-socket:didReadData:withTag:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499657823.227464"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
-            landmarkName = "-socket:didReadData:withTag:"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
+            landmarkName = "-socket:didAcceptNewSocket:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
