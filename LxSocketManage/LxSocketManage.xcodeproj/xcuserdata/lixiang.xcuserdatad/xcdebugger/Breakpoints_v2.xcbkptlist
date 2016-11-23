@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499660403.466955"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499674800.284384"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "-socket:didReadData:withTag:"
+            startingLineNumber = "5866"
+            endingLineNumber = "5866"
+            landmarkName = "-maybeDequeueWrite"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499660403.466955"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499674812.818696"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
-            landmarkName = "-socket:didReadData:withTag:"
+            startingLineNumber = "5856"
+            endingLineNumber = "5856"
+            landmarkName = "-maybeDequeueWrite"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,13 +41,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499660403.466955"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499674929.523352"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "138"
-            endingLineNumber = "138"
-            landmarkName = "-socket:didReadData:withTag:"
+            startingLineNumber = "6066"
+            endingLineNumber = "6066"
+            landmarkName = "-doWriteData"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -57,76 +57,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499660403.466955"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675012.894253"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
-            landmarkName = "-sendMessage:type:"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__35-[LxSocketManage sendMessage:type:]_block_invoke"
-                  moduleName = "LxSocketManage"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/lixiang/workSpace/LxSocketManage/LxSocketManage/LxSocketManage/SocketManage/LxSocketManage.m"
-                  timestampString = "499669651.380848"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "123"
-                  endingLineNumber = "123"
-                  offsetFromSymbolStart = "1056">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__copy_helper_block_.54"
-                  moduleName = "LxSocketManage"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/lixiang/workSpace/LxSocketManage/LxSocketManage/LxSocketManage/SocketManage/LxSocketManage.m"
-                  timestampString = "499669651.382262"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "123"
-                  endingLineNumber = "123"
-                  offsetFromSymbolStart = "116">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__destroy_helper_block_.55"
-                  moduleName = "LxSocketManage"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/lixiang/workSpace/LxSocketManage/LxSocketManage/LxSocketManage/SocketManage/LxSocketManage.m"
-                  timestampString = "499669651.38348"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "123"
-                  endingLineNumber = "123"
-                  offsetFromSymbolStart = "64">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499672714.576333"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "242"
-            endingLineNumber = "242"
-            landmarkName = "-setConnectStatus:"
+            startingLineNumber = "6101"
+            endingLineNumber = "6101"
+            landmarkName = "-doWriteData"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -136,13 +73,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499672714.576333"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675026.949757"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "265"
-            endingLineNumber = "265"
-            landmarkName = "-reConnectSocket"
+            startingLineNumber = "5901"
+            endingLineNumber = "5901"
+            landmarkName = "-doWriteData"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -152,13 +89,205 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "LxSocketManage/SocketManage/LxSocketManage.m"
-            timestampString = "499669272.703367"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675029.008316"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
-            landmarkName = "-socket:didAcceptNewSocket:"
+            startingLineNumber = "5925"
+            endingLineNumber = "5925"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675030.542265"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "5941"
+            endingLineNumber = "5941"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675032.33383"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "5956"
+            endingLineNumber = "5956"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675034.126115"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "5975"
+            endingLineNumber = "5975"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675037.007919"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "5985"
+            endingLineNumber = "5985"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675038.861703"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6003"
+            endingLineNumber = "6003"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675039.613804"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "5997"
+            endingLineNumber = "5997"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675043.501507"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6082"
+            endingLineNumber = "6082"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675046.493373"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6115"
+            endingLineNumber = "6115"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675047.477165"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6121"
+            endingLineNumber = "6121"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675048.093394"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6130"
+            endingLineNumber = "6130"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675049.29331"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6136"
+            endingLineNumber = "6136"
+            landmarkName = "-doWriteData"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage/Source/GCD/GCDAsyncSocket.m"
+            timestampString = "499675052.757141"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "6196"
+            endingLineNumber = "6196"
+            landmarkName = "-doWriteData"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -64,6 +64,25 @@
     return _socketModelArray;
 }
 
+
+- (NSString *)dictionnaryToJsonStringWithDic:(NSDictionary *)dic
+{
+    NSError *error = nil;
+    NSData *stringData = [NSJSONSerialization dataWithJSONObject:dic
+                                                         options:NSJSONWritingPrettyPrinted
+                                                           error:&error];
+    if (error) {
+        NSLog(@"文本打包错误%@",[error description]);
+        return nil;
+    }
+    NSString *jsonString = [[NSString alloc] initWithData:stringData encoding:NSUTF8StringEncoding];
+    //字典对象用系统json序列化之后的data，转UTF-8后的jsonstring里面包含有"\n"以及" ",需要替换掉
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@" " withString:@""];
+    jsonString = [jsonString stringByAppendingString:@"\r\n"];
+    return jsonString;
+}
+
 #pragma mark - CallFunction
 - (BOOL)createConnectWithHost:(NSString *)host
 {
@@ -72,13 +91,13 @@
                                              delegateQueue:dispatch_get_main_queue()];
     BOOL initSuccess = NO;
     if ([host isEqualToString:ipAddress]) {
-       initSuccess = [self.socket acceptOnPort:LxSocketPort error:nil];
+        initSuccess = [self.socket acceptOnPort:LxSocketPort error:nil];
         self.type = SocketServer;
     }else
     {
-       initSuccess = [self.socket connectToHost:host
-                                         onPort:LxSocketPort
-                                          error:nil];
+        initSuccess = [self.socket connectToHost:host
+                                          onPort:LxSocketPort
+                                           error:nil];
         self.type = SocketClient;
     }
     if (initSuccess) {
@@ -104,10 +123,9 @@
         NSMutableDictionary *msgInfo = [NSMutableDictionary dictionaryWithObject:msg forKey:@"message"];
         [msgInfo setObject:@(type) forKey:@"tag"];
         
-        NSError *error = nil;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:msgInfo
-                                                           options:NSJSONWritingPrettyPrinted
-                                                             error:&error];
+        NSString *jsonString = [self dictionnaryToJsonStringWithDic:msgInfo];
+        
+        NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
         
         if (self.type == SocketServer) {
             for (LxSocketModel *model in self.socketModelArray) {
@@ -119,7 +137,7 @@
             [self.socket writeData:jsonData withTimeout:1 tag:0];
             [self.socket readDataWithTimeout:-1 tag:0];
         }
- 
+        
     });
     
 }
@@ -127,41 +145,65 @@
 #pragma mark - SocketDelegate
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
-    
-    NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-    NSString *msgStr = info[@"message"];
-    NSLog(@"收到消息%@",msgStr);
-    NSInteger type = [info[@"tag"] integerValue];
-    switch (type) {
-        case SocketSendMsgNormal:
-        {
-            if (self.type == SocketServer) {
-                for (LxSocketModel *model in self.socketModelArray) {
-                    if (model.socket != sock) {
-                        [model.socket writeData:data withTimeout:-1 tag:0];
+    [self.socket readDataWithTimeout:-1 tag:0];
+    NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    //TODO:由于出现粘包问题，此处以"\r\n"为分割出字符串数组，依次处理
+    NSArray *jsonArray = [jsonString componentsSeparatedByString:@"\r\n"];
+    for (NSString *tempStr in jsonArray) {
+        if (tempStr.length < 1) {
+            continue;
+        }
+        NSData *jsonData = [tempStr dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSError *error = nil;
+        NSDictionary *info = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&error];
+        if (error) {
+            NSLog(@"收到数据解析错误%@",[error description]);
+        }
+        NSString *msgStr = info[@"message"];
+        NSLog(@"收到----%@",msgStr);
+        NSInteger type = [info[@"tag"] integerValue];
+        switch (type) {
+            case SocketSendMsgNormal:
+            {
+                if (msgStr.length > 0) {
+                    if (self.type == SocketServer) {
+                        for (LxSocketModel *model in self.socketModelArray) {
+                            if (model.socket != sock) {
+                                [model.socket writeData:data withTimeout:-1 tag:0];
+                            }else
+                            {
+//                                NSDictionary *callBackInfo = @{@"message" : @"成功收到信息",
+//                                                               @"tag"     : @(SocketSendMsgReceiveCallBack)};
+//                                NSString *callBackJsonStr = [self dictionnaryToJsonStringWithDic:callBackInfo];
+//                                NSData *callBackData = [callBackJsonStr dataUsingEncoding:NSUTF8StringEncoding];
+//                                [model.socket writeData:callBackData withTimeout:-1 tag:0];
+                            }
+                        }
                     }else
                     {
-                        NSDictionary *callBackInfo = @{@"message" : @"成功收到信息",
-                                                       @"tag"     : @(SocketSendMsgReceiveCallBack)};
-                        NSData *callBackData = [NSJSONSerialization dataWithJSONObject:callBackInfo
-                                                                               options:NSJSONWritingPrettyPrinted error:nil];
-                        [model.socket writeData:callBackData withTimeout:1 tag:0];
+//                        NSDictionary *callBackInfo = @{@"message" : @"成功收到信息",
+//                                                       @"tag"     : @(SocketSendMsgReceiveCallBack)};
+//                        NSString *callBackJsonStr = [self dictionnaryToJsonStringWithDic:callBackInfo];
+//                        NSData *callBackData = [callBackJsonStr dataUsingEncoding:NSUTF8StringEncoding];
+//                        [self.socket writeData:callBackData withTimeout:-1 tag:0];
                     }
+                    if ([_delegate respondsToSelector:@selector(didReceiveMsg:)]){
+                        [_delegate didReceiveMsg:msgStr];
+                    }
+                    
                 }
             }
-            if ([_delegate respondsToSelector:@selector(didReceiveMsg:)]){
-                [_delegate didReceiveMsg:msgStr];
-            }
-        }
-            break;
+                break;
             case SocketSendMsgReceiveCallBack:
-        {
-            NSLog(@"成功收到回调");
+            {
+                NSLog(@"成功收到回调");
+            }
+            default:
+                break;
         }
-        default:
-            break;
     }
-    [self.socket readDataWithTimeout:-1 tag:0];
+    
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket
@@ -202,7 +244,7 @@
 {
     NSLog(@"失去连接");
     if (sock == self.socket) {
-       self.connectStatus = SocketClosed;
+        self.connectStatus = SocketClosed;
     }else
     {
         if ([sock isKindOfClass:[NSNull class]]  && sock != nil) {
@@ -228,15 +270,21 @@
         {
             [self.reconnectTimer invalidate];
             self.reconnectTimer = nil;
-            
+            if (!_beatTimer && self.type == SocketClient) {
+                _beatTimer = [NSTimer scheduledTimerWithTimeInterval:30
+                                                              target:self
+                                                            selector:@selector(sendBeat)
+                                                            userInfo:nil repeats:YES];
+                [[NSRunLoop mainRunLoop] addTimer:_beatTimer forMode:NSRunLoopCommonModes];
+            }
         }
             break;
-            case SocketConneting:
+        case SocketConneting:
         {
             
         }
             break;
-            case SocketClosed:
+        case SocketClosed:
         {
             if (!_reconnectTimer) {
                 [_beatTimer invalidate];
@@ -247,7 +295,7 @@
                                                                   repeats:YES];
                 [[NSRunLoop mainRunLoop] addTimer:self.reconnectTimer forMode:NSRunLoopCommonModes];
             }
-
+            
         }
             break;
         default:
@@ -276,6 +324,11 @@
 }
 
 - (void)sendBeat
+{
+    [self sendMessage:@"心跳" type:SocketSendMsgBeatMsg];
+}
+
+- (void)msgReceiveSuccessSend
 {
     
 }
