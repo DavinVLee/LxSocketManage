@@ -22,7 +22,14 @@
  **/
 - (void)lx_connectAsServerHostWithAvaliableClientModels:(NSMutableArray <LxSocketClientModel *>*)clientModels;
 /**
- *@description 向所有客户端发送消息
+ *@description 向客户端发送消息
+ *@param message 发送内容
+ *@param msgSync 是否同步（即客户端在一定延时后进行分发后的操作）
+ *@param auxiliaryInfo 附属添加的发送消息
+ *@param specialDesID 发送方ID集合，若为nil则全部客户端发送
  **/
-- (void)lx_tcpSendMessage:(NSString *)message;
+- (void)lx_tcpSendMessage:(NSString *)message
+                  msgSync:(BOOL)msgSync
+            auxiliaryInfo:(NSDictionary *)auxiliaryInfo
+             specialDesID:(NSArray <NSString *>*)specialDesID;
 @end

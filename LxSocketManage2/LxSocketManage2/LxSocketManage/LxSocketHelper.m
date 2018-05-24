@@ -29,7 +29,7 @@
             case LxSocketInfoMsgType:
             return @"消息类型";
             break;
-            case lxSocketInfoIP:
+            case LxSocketInfoIP:
             return @"发送方IP";
             break;
             default:

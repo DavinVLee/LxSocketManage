@@ -13,7 +13,7 @@
 /** udp连接端口 **/
 #define LxSudp_port 9999
 /** 心跳包发送间隔 **/
-#define LxSheartBeatTimeIntravl 2
+#define LxSheartBeatTimeIntravl 2.f
 
 @protocol LxsocketDelegate <NSObject>
 @optional
@@ -68,7 +68,9 @@ typedef NS_ENUM(NSInteger,LxSocketMessageKey)
     /** 发送消息类型 **/
     LxSocketInfoMsgType = 3,
     /** 发送方IP地址 **/
-    lxSocketInfoIP     = 4,
+    LxSocketInfoIP     = 4,
+    /** 发送消息至客户端后是否同步（延迟执行） **/
+    LxSocketInfoSync   = 5,
 };
 
 #endif /* LxSocketHeader_h */

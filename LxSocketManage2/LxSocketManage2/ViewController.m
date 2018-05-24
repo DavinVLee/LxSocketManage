@@ -149,7 +149,7 @@
                                                                                                                [LxSocketClientModel lx_modelWithClientID:@"17"],
                                                                                                                [LxSocketClientModel lx_modelWithClientID:@"18"],
                                                                                                                [LxSocketClientModel lx_modelWithClientID:@"19"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"20"],]]];
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"21"],]]];
 }
 /** 点击作为客户端 **/
 - (IBAction)hostAsClientBtnClicked:(id)sender {
@@ -159,7 +159,10 @@
     
     self.sendMsgCountLabel.text = [NSString stringWithFormat:@"%ld",[self.sendMsgCountLabel.text integerValue] + 1];
     if (_socketServerManage) {
-        [_socketServerManage lx_tcpSendMessage:self.sendMessageTextFiled.text];
+        [_socketServerManage lx_tcpSendMessage:self.sendMessageTextFiled.text
+                                       msgSync:YES
+                                 auxiliaryInfo:nil
+                                  specialDesID:nil];
     }else
     {
         [_socketClientManage lx_tcpSendMessage:self.sendMessageTextFiled.text];

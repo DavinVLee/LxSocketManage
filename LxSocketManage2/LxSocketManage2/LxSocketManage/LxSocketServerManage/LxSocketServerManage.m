@@ -34,7 +34,7 @@ GCDAsyncSocketDelegate>
 /** tcp代理队列 **/
 @property (strong, nonatomic) dispatch_queue_t tcpDelegateQueue;
 /** 检查超时计时器 **/
-@property (strong, nonatomic) NSTimer *runLoopTime;
+@property (strong, nonatomic) dispatch_source_t runLoopTime;
 @end
 @implementation LxSocketServerManage
 #pragma mark - ********************  init  ********************
@@ -85,9 +85,37 @@ GCDAsyncSocketDelegate>
     [self udp_connectBegin];
 }
 /** 发送消息 **/
+/**
+ *@description 向客户端发送消息
+ *@param message 发送内容
+ *@param msgSync 是否同步（即客户端在一定延时后进行分发后的操作）
+ *@param auxiliaryInfo 附属添加的发送消息
+ *@param specialDesID 发送方ID集合，若为nil则全部客户端发送
+ **/
 - (void)lx_tcpSendMessage:(NSString *)message
+                  msgSync:(BOOL)msgSync
+            auxiliaryInfo:(NSDictionary *)auxiliaryInfo
+             specialDesID:(NSArray <NSString *>*)specialDesID;
 {
-    [self tcp_sendMessage:message msgType:LxSocketSendMessageNormal];
+    NSMutableDictionary *msgInfo = [self tcp_defaultMessageInfo];
+    [msgInfo setObject:message forKey:[NSString stringWithFormat:@"%ld",LxSocketInfoMsg]];
+    [msgInfo setObject:[LxSocketHelper lx_strWithInfoKey:LxSocketSendMessageNormal] forKey:[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsgType]];
+    if (auxiliaryInfo) {
+        for (NSString *auxiKey in auxiliaryInfo) {
+            [msgInfo setObject:auxiliaryInfo[auxiKey] forKey:auxiKey];
+        }
+    }
+    [msgInfo setObject:@(msgSync) forKey:[LxSocketHelper lx_strWithInfoKey:LxSocketInfoSync]];
+    NSString *jsonMsg = [msgInfo lx_JsonString];
+    
+    for (LxSocketClientModel *client in self.allClientModels) {
+        if (client.socket) {
+            [client.socket writeData:[jsonMsg dataUsingEncoding:NSUTF8StringEncoding]
+                         withTimeout:0
+                                 tag:0];
+            [client.socket readDataWithTimeout:-1 tag:0];
+        }
+    }
 }
 #pragma mark - ********************  Function  ********************
 - (void)tcp_disconnect
@@ -155,20 +183,22 @@ GCDAsyncSocketDelegate>
 /** 关闭计时器 **/
 - (void)stopRunloopTimer
 {
-    [self.runLoopTime invalidate];
-    self.runLoopTime = nil;
+    if (self.runLoopTime) {
+        dispatch_cancel(self.runLoopTime);
+        self.runLoopTime = nil;
+    }
 }
 /** 开始关于客户端心跳包是否及时发送问题 **/
 - (void)startClientHeartBeatCircle
 {
     [self stopRunloopTimer];
-    self.runLoopTime = [NSTimer timerWithTimeInterval:LxSheartBeatTimeIntravl + 0.5
-                                               target:self
-                                             selector:@selector(checkClientsHeartBeat)
-                                             userInfo:nil
-                                              repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:self.runLoopTime
-                              forMode:NSRunLoopCommonModes];
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    self.runLoopTime = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+    dispatch_source_set_timer(self.runLoopTime,DISPATCH_TIME_NOW,( LxSheartBeatTimeIntravl + 0.5)*NSEC_PER_SEC, 0);
+    dispatch_source_set_event_handler(self.runLoopTime, ^{
+        [self checkClientsHeartBeat];
+    });
+    dispatch_resume(self.runLoopTime);
 }
 /** 检查每个客户端心跳包是否及时发送 **/
 - (void)checkClientsHeartBeat
@@ -212,7 +242,7 @@ GCDAsyncSocketDelegate>
 }
 - (void)addSocket:(GCDAsyncSocket *)socket clientID:(NSString *)clientID
 {
-
+    
     for (LxSocketClientModel *client in self.allClientModels) {
         if ([client.clientID isEqualToString:clientID]) {
             if (client.socket &&
@@ -244,7 +274,7 @@ GCDAsyncSocketDelegate>
     info[[NSString stringWithFormat:@"%ld",LxSocketInfoSendTime]] = [NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970]];
     NSString *ip = [IPAddressManage getIPAddress:NO];
     if (ip) {
-        info[[NSString stringWithFormat:@"%ld",lxSocketInfoIP]] = ip;
+        info[[NSString stringWithFormat:@"%ld",LxSocketInfoIP]] = ip;
     }else
     {
         //        NSLog(@"获取到空ip");
@@ -259,24 +289,6 @@ GCDAsyncSocketDelegate>
     info[[NSString stringWithFormat:@"%ld",LxSocketInfoSendTime]] = [NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970]];
     
     return info;
-}
-/** 发送TCP消息 **/
-- (void)tcp_sendMessage:(NSString *)msg msgType:(LxSocketSendMessageType)msgType
-{
-    NSMutableDictionary *msgInfo = [self tcp_defaultMessageInfo];
-    [msgInfo setObject:msg forKey:[NSString stringWithFormat:@"%ld",LxSocketInfoMsg]];
-    [msgInfo setObject:[LxSocketHelper lx_strWithInfoKey:msgType] forKey:[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsgType]];
-    NSString *jsonMsg = [msgInfo lx_JsonString];
-    
-    for (LxSocketClientModel *client in self.allClientModels) {
-        if (client.socket && client.connectStatus == LxSocketConnected) {
-            [client.socket writeData:[jsonMsg dataUsingEncoding:NSUTF8StringEncoding]
-                         withTimeout:0
-                                 tag:0];
-            [client.socket readDataWithTimeout:-1 tag:0];
-        }
-    }
-//    [self.tcpSocket readDataWithTimeout:-1 tag:0];
 }
 /** 发送TCP消息 **/
 - (void)tcp_sendMessage:(NSString *)msg msgType:(LxSocketSendMessageType)msgType sockets:(NSArray <GCDAsyncSocket *>*)sockets
@@ -359,7 +371,7 @@ GCDAsyncSocketDelegate>
             case LxSocketSendMessageNormal:
             {
                 if (self.delegate) {
-                    NSTimeInterval clientSendTime = [msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoSendTime]] floatValue];
+                    NSTimeInterval clientSendTime = [msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoSendTime]] doubleValue];
                     [self.delegate receivedMessage:message
                                             fromID:fromID
                      msgDelay:[[NSDate date] timeIntervalSince1970] - clientSendTime ];
@@ -415,7 +427,7 @@ GCDAsyncSocketDelegate>
         switch (msgType) {
             case LxSocketSendMessageIpRequest:
             {
-                NSString *ip = msgInfo[[LxSocketHelper lx_strWithInfoKey:lxSocketInfoIP]];
+                NSString *ip = msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoIP]];
                 if (ip && [self checkExistClientID:fromID]) {
                     [self udp_serverHostSendToClient:ip];
                 }
