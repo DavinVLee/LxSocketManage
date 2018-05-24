@@ -175,6 +175,7 @@ GCDAsyncSocketDelegate>
     else
     {
        [self.tcpSocket readDataWithTimeout:-1 tag:0];
+        [self startRunloopCheck];
     }
     return error == nil;
 }
@@ -200,29 +201,35 @@ GCDAsyncSocketDelegate>
     }
 }
 /** 开始关于客户端心跳包是否及时发送问题 **/
-- (void)startClientHeartBeatCircle
+- (void)startRunloopCheck
 {
     [self stopRunloopTimer];
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     self.runLoopTime = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-    dispatch_source_set_timer(self.runLoopTime,DISPATCH_TIME_NOW,( LxSheartBeatTimeIntravl + 0.5)*NSEC_PER_SEC, 0);
+    dispatch_source_set_timer(self.runLoopTime,DISPATCH_TIME_NOW,(int64_t)(LxSheartBeatTimeIntravl* 2 * NSEC_PER_SEC), 0);
     dispatch_source_set_event_handler(self.runLoopTime, ^{
-        [self checkClientsHeartBeat];
+        [self runloopCheck];
     });
     dispatch_resume(self.runLoopTime);
 }
-/** 检查每个客户端心跳包是否及时发送 **/
-- (void)checkClientsHeartBeat
+/** 检查每个客户端心跳包是否及时发送，确认连接id **/
+- (void)runloopCheck
 {
     NSTimeInterval timeNow = [[NSDate date] timeIntervalSince1970];
     for (LxSocketClientModel *client in self.allClientModels) {
         if (client.connectStatus == LxSocketConnected) {
-            if (timeNow - client.lastTimeStamp > LxSheartBeatTimeIntravl) {
-                
+            if (timeNow - client.lastTimeStamp - client.lastTimeStamp > LxSheartBeatTimeIntravl * 2.f) {
+                [self removeSocket:client.socket];
+                [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"出现未及时发送心跳包客户端id%@",client.clientID]];
+//                NSLog(@"出现未及时发送心跳包客户端id%@",client.clientID);
             }
-        }else if (client.connectStatus == LxSocketConnectLost)
-        {
-            
+        }
+    }
+    if (self.tempSocketArray.count > 0) {
+        for (GCDAsyncSocket *socket in self.tempSocketArray) {
+            [self tcp_sendMessage:@"请求id"
+                          msgType:LxSocketSendMessageClientIdRequest
+                          sockets:@[socket]];
         }
     }
 }

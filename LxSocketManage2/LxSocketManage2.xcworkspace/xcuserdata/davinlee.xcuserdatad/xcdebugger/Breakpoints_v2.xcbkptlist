@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage2/ViewController.m"
-            timestampString = "548859090.719324"
+            timestampString = "548861599.399747"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "88"
@@ -26,7 +26,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage2/ViewController.m"
-            timestampString = "548859090.719631"
+            timestampString = "548861599.400106"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "91"
@@ -42,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage2/LxSocketManage/LxSocketClientManage/LxSocketClientManage.m"
-            timestampString = "548859090.719692"
+            timestampString = "548861599.400172"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "313"
@@ -58,7 +58,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage2/ViewController.m"
-            timestampString = "548859090.7199"
+            timestampString = "548861599.400406"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "97"
@@ -74,13 +74,61 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LxSocketManage2/LxSocketManage/LxSocketServerManage/LxSocketServerManage.m"
-            timestampString = "548859090.719954"
+            timestampString = "548861599.400466"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "293"
-            endingLineNumber = "293"
+            startingLineNumber = "300"
+            endingLineNumber = "300"
             landmarkName = "-updateClient:connectStatus:"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "LxSocketManage2/LxSocketManage/LxSocketServerManage/LxSocketServerManage.m"
+            timestampString = "548861622.680385"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "219"
+            endingLineNumber = "219"
+            landmarkName = "-runloopCheck"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[LxSocketServerManage runloopCheck]"
+                  moduleName = "LxSocketManage2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davin/Desktop/testProject/LxSocket/LxSocketManage2/LxSocketManage2/LxSocketManage/LxSocketServerManage/LxSocketServerManage.m"
+                  timestampString = "548861622.938007"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "219"
+                  endingLineNumber = "219"
+                  offsetFromSymbolStart = "164">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[LxSocketServerManage runloopCheck]"
+                  moduleName = "LxSocketManage2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/davin/Desktop/testProject/LxSocket/LxSocketManage2/LxSocketManage2/LxSocketManage/LxSocketServerManage/LxSocketServerManage.m"
+                  timestampString = "548861622.940678"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "219"
+                  endingLineNumber = "219"
+                  offsetFromSymbolStart = "180">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
