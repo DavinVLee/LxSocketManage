@@ -13,6 +13,7 @@
 #import "LxSocketHeader.h"
 #import "LxSocketClientModel.h"
 #import "LxLogInterface.h"
+#import "LxSocketHelper.h"
 @interface ViewController () <LxLogInstanceDelegate,
                             LxsocketDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *idTextFiled;
@@ -78,12 +79,13 @@
     // Dispose of any resources that can be recreated.
 }
 #pragma mark - ********************  SocketDelegate  ********************
-- (void)receivedMessage:(NSString *)message
-                 fromID:(NSString *)fromID
-               msgDelay:(NSTimeInterval)msgDelay
+- (void)receivedMessageInfo:(NSDictionary *)messageInfo
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        
+        NSTimeInterval clientSendTime = [messageInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoSendTime]] doubleValue];
+        NSString *message = messageInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsg]];
+        NSString *fromID = messageInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoUserID]];
+        NSTimeInterval msgDelay = [[NSDate date] timeIntervalSince1970] - clientSendTime;
         if ([message integerValue] - self.lastReceiveNumber == 1) {
             
         }else
@@ -144,25 +146,25 @@
 #pragma mark - ********************  ClickAction  ********************
 /** 点击作为服务端 **/
 - (IBAction)hostAsServerBtnClicked:(id)sender {
-    [self.socketServerManage lx_connectAsServerHostWithAvaliableClientModels:[NSMutableArray arrayWithArray: @[[LxSocketClientModel lx_modelWithClientID:@"0"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"1"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"2"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"3"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"4"],[LxSocketClientModel lx_modelWithClientID:@"5"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"6"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"7"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"8"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"9"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"11"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"12"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"13"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"14"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"15"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"16"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"17"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"18"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"19"],
-                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"21"],]]];
+    [self.socketServerManage lx_connectAsServerHostWithAvaliableClientModels:[NSMutableArray arrayWithArray: @[[LxSocketClientModel lx_modelWithClientID:@"0" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"1" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"2" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"3" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"4" clientName:@"xxx"],[LxSocketClientModel lx_modelWithClientID:@"5" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"6" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"7" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"8" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"9" clientName:@"xxx"],
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"11" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"12" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"13" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"14" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"15" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"16" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"17" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"18" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"19" clientName:@"xxx"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"21" clientName:@"xxx"],]]];
 }
 /** 点击作为客户端 **/
 - (IBAction)hostAsClientBtnClicked:(id)sender {

@@ -15,6 +15,8 @@ typedef NS_ENUM(NSInteger,LxSocketConnectStatus)
     LxSocketConnected = 2,
 };
 @interface LxSocketClientModel : NSObject
+/** 客户端名称 **/
+@property (copy, nonatomic) NSString *clientName;
 /** 客户端ID **/
 @property (copy, nonatomic) NSString *clientID;
 /** 客户端socket持有 **/
@@ -23,7 +25,13 @@ typedef NS_ENUM(NSInteger,LxSocketConnectStatus)
 @property (assign, nonatomic) NSTimeInterval lastTimeStamp;
 /** 客户端连接状态 **/
 @property (assign, nonatomic) LxSocketConnectStatus connectStatus;
-/** 获取model **/
-+ (LxSocketClientModel *)lx_modelWithClientID:(NSString *)clientID;
+/**
+ *@description 获取model
+ *@param clientID 客户端ID
+ *@param clientName 客户端名称
+ *@return 客户端client
+ **/
++ (LxSocketClientModel *)lx_modelWithClientID:(NSString *)clientID
+                                   clientName:(NSString *)clientName;
 
 @end

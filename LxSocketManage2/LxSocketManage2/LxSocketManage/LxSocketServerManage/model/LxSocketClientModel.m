@@ -9,11 +9,18 @@
 #import "LxSocketClientModel.h"
 
 @implementation LxSocketClientModel
-/** 获取model **/
+/**
+*@description 获取model
+*@param clientID 客户端ID
+*@param clientName 客户端名称
+*@return 客户端client
+**/
 + (LxSocketClientModel *)lx_modelWithClientID:(NSString *)clientID
+clientName:(NSString *)clientName;
 {
     LxSocketClientModel *client = [[LxSocketClientModel alloc] init];
     client.clientID = [clientID copy];
+    client.clientName = clientName;
     return client;
 }
 @end

@@ -418,10 +418,7 @@ GCDAsyncSocketDelegate>
             case LxSocketSendMessageNormal:
             {
                 if (self.delegate) {
-                    NSTimeInterval clientSendTime = [msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoSendTime]] doubleValue];
-                    [self.delegate receivedMessage:message
-                                            fromID:fromID
-                     msgDelay:[[NSDate date] timeIntervalSince1970] - clientSendTime ];
+                    [self.delegate receivedMessageInfo:msgInfo];
                 }
             }
                 break;

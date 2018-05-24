@@ -19,11 +19,9 @@
 @optional
 /**
  *@description 获取tcp消息
- *@param message 实际消息内容
- *@param msgDelay 消息延迟时间
- *@param fromID 发送方ID （客户端获取ID为nil)
+ *@param messageInfo 实际消息内容
  **/
-- (void)receivedMessage:(NSString *)message fromID:(NSString *)fromID msgDelay:(NSTimeInterval)msgDelay;
+- (void)receivedMessageInfo:(NSDictionary *)messageInfo;
 /**
  *@description 心跳包消息
  **/
@@ -55,6 +53,7 @@ typedef NS_ENUM(NSInteger,LxSocketSendMessageType)
     LxSocketSendMessageClientIdRequest = 5,
     /** 回复服务端id标识 **/
     LxSocketSendMessageClientIdReply = 6,
+
 };
 /** 发送消息key **/
 typedef NS_ENUM(NSInteger,LxSocketMessageKey)
@@ -69,8 +68,16 @@ typedef NS_ENUM(NSInteger,LxSocketMessageKey)
     LxSocketInfoMsgType = 3,
     /** 发送方IP地址 **/
     LxSocketInfoIP     = 4,
+    
+        /******************************************************针对课堂添加枚举***************************************************************/
+    
     /** 发送消息至客户端后是否同步（延迟执行） **/
     LxSocketInfoSync   = 5,
+    /** targetid（课程id） **/
+    LxSocketInfoTargetID = 6,
+    /** classid(班级id） **/
+    LxSocketInfoClassID = 7,
+    
 };
 
 #endif /* LxSocketHeader_h */
