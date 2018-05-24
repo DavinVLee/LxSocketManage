@@ -31,6 +31,8 @@ GCDAsyncSocketDelegate>
 @property (strong, nonatomic) dispatch_queue_t udpQueue;
 /** tcp连接队列 **/
 @property (strong, nonatomic) dispatch_queue_t tcpQueue;
+/** tcp代理队列 **/
+@property (strong, nonatomic) dispatch_queue_t tcpDelegateQueue;
 /** 检查超时计时器 **/
 @property (strong, nonatomic) NSTimer *runLoopTime;
 @end
@@ -40,6 +42,9 @@ GCDAsyncSocketDelegate>
 {
     if (self == [super init]) {
         _tempSocketArray = [[NSMutableArray alloc] init];
+          _tcpDelegateQueue = dispatch_queue_create("tcpDelegateQueue", DISPATCH_QUEUE_SERIAL);
+        _tcpQueue = dispatch_queue_create("tcpSocketQueue", DISPATCH_QUEUE_SERIAL);
+        _udpQueue = dispatch_queue_create("udpSocketQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -48,9 +53,9 @@ GCDAsyncSocketDelegate>
 - (GCDAsyncSocket *)tcpSocket
 {
     if (!_tcpSocket) {
-        _tcpQueue = dispatch_queue_create("tcpSocketQueue", DISPATCH_QUEUE_SERIAL);
+        
         _tcpSocket = [[GCDAsyncSocket alloc] initWithDelegate:self
-                                                delegateQueue:_tcpQueue
+                                                delegateQueue:_tcpDelegateQueue
                                                   socketQueue:_tcpQueue];
         _tcpSocket.delegate = self;
     }
@@ -60,7 +65,7 @@ GCDAsyncSocketDelegate>
 - (GCDAsyncUdpSocket *)udpSocket
 {
     if (!_udpSocket) {
-        _udpQueue = dispatch_queue_create("udpSocketQueue", DISPATCH_QUEUE_SERIAL);
+        
         _udpSocket = [[GCDAsyncUdpSocket alloc] initWithSocketQueue:_udpQueue];
         _udpSocket.delegateQueue = _udpQueue;
         _udpSocket.delegate = self;
@@ -144,7 +149,7 @@ GCDAsyncSocketDelegate>
 /** 因socket绑定或初始化出问题后的延时重新绑定 **/
 - (void)reTryHostBind
 {
-    [self performSelector:@selector(lx_connectAsServerHostWithAvaliableClientModels:) withObject:nil afterDelay:2];
+    [self performSelector:@selector(lx_connectAsServerHostWithAvaliableClientModels:) withObject:nil afterDelay:LxSheartBeatTimeIntravl * 0.75];
     [[LxLogInterface sharedInstance] logWithStr:@"重新进行一次连接"];
 }
 /** 关闭计时器 **/
@@ -348,19 +353,16 @@ GCDAsyncSocketDelegate>
         NSMutableDictionary *msgInfo = [tempJsonStr lx_getDictionary];
         NSInteger msgType = [msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsgType]] integerValue];
         // NSLog(@"tcp接收到%@",tempJsonStr);
-        for (NSString *key in msgInfo) {
-            NSString *value = msgInfo[key];
-            NSLog(@"接收到的消息中tcp = %@:%@：",[LxSocketHelper lx_socketKeyMsgWithType:[key integerValue]],value);
-        }
         NSString *message = msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsg]];
         NSString *fromID = msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoUserID]];
         switch (msgType) {
             case LxSocketSendMessageNormal:
             {
                 if (self.delegate) {
+                    NSTimeInterval clientSendTime = [msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoSendTime]] floatValue];
                     [self.delegate receivedMessage:message
-                                            fromID:fromID];
-                    [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"接收到到消息%@ fromid = %@",message,fromID]];
+                                            fromID:fromID
+                     msgDelay:[[NSDate date] timeIntervalSince1970] - clientSendTime ];
                 }
             }
                 break;
@@ -385,9 +387,9 @@ GCDAsyncSocketDelegate>
                         client.connectStatus = LxSocketConnected;
                     }
                 }
-                if (self.delegate) {
-                    [self.delegate receiveHeartBeat:message fromID:fromID];
-                }
+//                if (self.delegate) {
+//                    [self.delegate receiveHeartBeat:message fromID:fromID];
+//                }
             }
                 break;
             default:
@@ -427,6 +429,8 @@ GCDAsyncSocketDelegate>
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotConnect:(NSError *)error{
     //    NSLog(@"UDP断开连接");
     [[LxLogInterface sharedInstance] logWithStr:@"UDP断开连接"];
+    /** 发送广播不成功时此处会调用 **/
+    [self reTryHostBind];
 }
 
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag{
@@ -442,10 +446,12 @@ GCDAsyncSocketDelegate>
 - (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error{
     //    NSLog(@"UDP断开连接");
     [[LxLogInterface sharedInstance] logWithStr:@"UDP断开连接close"];
+    [self reTryHostBind];
 }
 
 - (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
     //    NSLog(@"没有发送数据");
     [[LxLogInterface sharedInstance] logWithStr:@"没有发送数据"];
+     [self reTryHostBind];
 }
 @end

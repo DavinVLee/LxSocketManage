@@ -20,9 +20,10 @@
 /**
  *@description 获取tcp消息
  *@param message 实际消息内容
+ *@param msgDelay 消息延迟时间
  *@param fromID 发送方ID （客户端获取ID为nil)
  **/
-- (void)receivedMessage:(NSString *)message fromID:(NSString *)fromID;
+- (void)receivedMessage:(NSString *)message fromID:(NSString *)fromID msgDelay:(NSTimeInterval)msgDelay;
 /**
  *@description 心跳包消息
  **/

@@ -12,6 +12,7 @@
 #import "LxLogInterface.h"
 #import "LxSocketHeader.h"
 #import "LxSocketClientModel.h"
+#import "LxLogInterface.h"
 @interface ViewController () <LxLogInstanceDelegate,
                             LxsocketDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *idTextFiled;
@@ -51,39 +52,54 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [LxLogInterface sharedInstance].delegate = self;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(enterForgroundReConnect)
+                                                 name:@"kApplicationEnterForeground"
+                                               object:nil];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
+- (void)enterForgroundReConnect
+{
+    [[LxLogInterface sharedInstance] logWithStr:@"进入前台重新连接"];
+    if (_socketServerManage) {
+        [self hostAsServerBtnClicked:nil];
+    }else
+    {
+        [self hostAsClientBtnClicked:nil];
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 #pragma mark - ********************  SocketDelegate  ********************
-- (void)receivedMessage:(NSString *)message fromID:(NSString *)fromID
+- (void)receivedMessage:(NSString *)message fromID:(NSString *)fromID msgDelay:(NSTimeInterval)msgDelay
 {
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        NSMutableString *text = [NSMutableString stringWithString:self.receiveMessageTextView.text];
-//        [text appendString:@"\n"];
-//        [text appendFormat:@"%@:",fromID];
-//        [text appendString:message];
-//        self.receiveMessageTextView.text = text;
-//        [self.receiveMessageTextView scrollRectToVisible:CGRectMake(0, self.receiveMessageTextView.contentSize.height - CGRectGetHeight(self.receiveMessageTextView.frame), CGRectGetWidth(self.receiveMessageTextView.frame), CGRectGetHeight(self.receiveMessageTextView.frame)) animated:YES];
-//    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableString *text = [NSMutableString stringWithString:self.receiveMessageTextView.text];
+        [text appendString:@"\n"];
+        [text appendFormat:@"%@:",fromID];
+        [text appendString:message];
+        [text appendString:[NSString stringWithFormat:@"延迟时间%f",msgDelay]];
+        self.receiveMessageTextView.text = text;
+        [self.receiveMessageTextView scrollRectToVisible:CGRectMake(0, self.receiveMessageTextView.contentSize.height - CGRectGetHeight(self.receiveMessageTextView.frame), CGRectGetWidth(self.receiveMessageTextView.frame), CGRectGetHeight(self.receiveMessageTextView.frame)) animated:YES];
+    });
 }
 
 - (void)receiveHeartBeat:(NSString *)message fromID:(NSString *)fromID
 {
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            NSMutableString *text = [NSMutableString stringWithString:self.heartBeatTextView.text];
-//            [text appendString:@"\n"];
-//            [text appendFormat:@"%@:",fromID];
-//            [text appendString:message];
-//            self.heartBeatTextView.text = text;
-//            [self.heartBeatTextView scrollRectToVisible:CGRectMake(0, self.heartBeatTextView.contentSize.height - CGRectGetHeight(self.heartBeatTextView.frame), CGRectGetWidth(self.heartBeatTextView.frame), CGRectGetHeight(self.heartBeatTextView.frame)) animated:YES];
-//        });
-//    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableString *text = [NSMutableString stringWithString:self.heartBeatTextView.text];
+            [text appendString:@"\n"];
+            [text appendFormat:@"%@:",fromID];
+            [text appendString:message];
+            self.heartBeatTextView.text = text;
+            [self.heartBeatTextView scrollRectToVisible:CGRectMake(0, self.heartBeatTextView.contentSize.height - CGRectGetHeight(self.heartBeatTextView.frame), CGRectGetWidth(self.heartBeatTextView.frame), CGRectGetHeight(self.heartBeatTextView.frame)) animated:YES];
+        });
+    });
    
 }
 - (void)sentMsgCountOnce
@@ -101,15 +117,15 @@
 #pragma mark - ********************  LogDelegate  ********************
 - (void)logWithString:(NSString *)str
 {
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            NSMutableString *text = [NSMutableString stringWithString:self.connectStatusTextView.text];
-//            [text appendString:@"\n"];
-//            [text appendString:str];
-//            self.connectStatusTextView.text = text;
-//            [self.connectStatusTextView scrollRectToVisible:CGRectMake(0, self.connectStatusTextView.contentSize.height - CGRectGetHeight(self.connectStatusTextView.frame), CGRectGetWidth(self.connectStatusTextView.frame), CGRectGetHeight(self.connectStatusTextView.frame)) animated:YES];
-//        });
-//    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableString *text = [NSMutableString stringWithString:self.connectStatusTextView.text];
+            [text appendString:@"\n"];
+            [text appendString:str];
+            self.connectStatusTextView.text = text;
+            [self.connectStatusTextView scrollRectToVisible:CGRectMake(0, self.connectStatusTextView.contentSize.height - CGRectGetHeight(self.connectStatusTextView.frame), CGRectGetWidth(self.connectStatusTextView.frame), CGRectGetHeight(self.connectStatusTextView.frame)) animated:YES];
+        });
+    });
 }
 
 #pragma mark - ********************  ClickAction  ********************
@@ -124,14 +140,24 @@
                                                                                [LxSocketClientModel lx_modelWithClientID:@"7"],
                                                                                [LxSocketClientModel lx_modelWithClientID:@"8"],
                                                                                [LxSocketClientModel lx_modelWithClientID:@"9"],
-                                                                               [LxSocketClientModel lx_modelWithClientID:@"11"]]]];
+                                                                               [LxSocketClientModel lx_modelWithClientID:@"11"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"12"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"13"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"14"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"15"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"16"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"17"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"18"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"19"],
+                                                                                                               [LxSocketClientModel lx_modelWithClientID:@"20"],]]];
 }
 /** 点击作为客户端 **/
 - (IBAction)hostAsClientBtnClicked:(id)sender {
     [self.socketClientManage lx_connectAsClientWithUserId:self.idTextFiled.text];
 }
 - (IBAction)sendMessageBtnClicked:(id)sender {
-    self.sendMessageTextFiled.text = [NSString stringWithFormat:@"%ld",[self.sendMessageTextFiled.text integerValue] + 1];
+    
+    self.sendMsgCountLabel.text = [NSString stringWithFormat:@"%ld",[self.sendMsgCountLabel.text integerValue] + 1];
     if (_socketServerManage) {
         [_socketServerManage lx_tcpSendMessage:self.sendMessageTextFiled.text];
     }else
@@ -158,6 +184,7 @@
 - (void)autoSend:(NSTimer *)timer
 {
     if ([self.sendMessageTextFiled.text integerValue] <1000) {
+        self.sendMessageTextFiled.text = [NSString stringWithFormat:@"%ld",[self.sendMessageTextFiled.text integerValue] + 1];
         [self sendMessageBtnClicked:nil];
     }else
     {

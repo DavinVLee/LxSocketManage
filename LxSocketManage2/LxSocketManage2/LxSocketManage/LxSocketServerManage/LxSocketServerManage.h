@@ -12,10 +12,10 @@
 @interface LxSocketServerManage : NSObject<LxsocketDelegate>
 /** 服务端代理 **/
 @property (weak, nonatomic) id <LxsocketDelegate> delegate;
-/**
- *@description 获取对应客户端model
- **/
-+ (LxSocketClientModel *)lx_clientModelWithClientID:(NSString *)clientID;
+///**
+// *@description 获取对应客户端model
+// **/
+//+ (LxSocketClientModel *)lx_clientModelWithClientID:(NSString *)clientID;
 /**
  *@description 开始作为服务端连接
  *@param clientModels 所有可连接客户端id model

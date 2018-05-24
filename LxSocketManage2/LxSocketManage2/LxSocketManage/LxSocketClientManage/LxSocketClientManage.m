@@ -26,6 +26,8 @@ GCDAsyncSocketDelegate>
 @property (strong, nonatomic) dispatch_queue_t udpQueue;
 /** tcp连接队列 **/
 @property (strong, nonatomic) dispatch_queue_t tcpQueue;
+/** tcp代理队列 **/
+@property (strong, nonatomic) dispatch_queue_t tcpDelegateQueue;
 /* ********************  userInfo_about  ******************** */
 /** 客户端唯一id **/
 @property (strong, nonatomic) NSString *clientId;
@@ -35,6 +37,8 @@ GCDAsyncSocketDelegate>
 @property (assign, nonatomic) NSInteger lastMessageTimeStamp;
 /****************************************************** ConnectAbout ***************************************************************/
 @property (strong, nonatomic) NSTimer *runLoopTime;
+/** 发送udpip请求次数 **/
+@property (assign, nonatomic) NSInteger udpIPRequestCount;
 
 @end
 
@@ -43,6 +47,7 @@ GCDAsyncSocketDelegate>
 {
     if (self == [super init]) {
         _tcpQueue = dispatch_queue_create("tcpSocketQueue", DISPATCH_QUEUE_SERIAL);
+        _tcpDelegateQueue = dispatch_queue_create("tcpDelegateQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -52,7 +57,7 @@ GCDAsyncSocketDelegate>
 {
     if (!_tcpSocket) {
         _tcpSocket = [[GCDAsyncSocket alloc] initWithDelegate:self
-                                                delegateQueue:_tcpQueue
+                                                delegateQueue:_tcpDelegateQueue
                                                   socketQueue:_tcpQueue];
         _tcpSocket.delegate = self;
     }
@@ -76,16 +81,19 @@ GCDAsyncSocketDelegate>
  **/
 - (void)lx_connectAsClientWithUserId:(NSString *)userId
 {
-    self.clientId = userId;
-    /** 开始连接 **/
-    BOOL udpCsuccess =  [self udp_connectBegin];
-    if (udpCsuccess) {
-        self.runLoopTime = [NSTimer scheduledTimerWithTimeInterval:1
-                                                            target:self selector:@selector(udp_ipAddressMessageSend:)
-                                                          userInfo:nil
-                                                           repeats:YES];
-        [[NSRunLoop mainRunLoop] addTimer:self.runLoopTime forMode:NSRunLoopCommonModes];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.clientId = userId;
+        /** 开始连接 **/
+        BOOL udpCsuccess =  [self udp_connectBegin];
+        if (udpCsuccess) {
+            self.udpIPRequestCount = 0;
+            self.runLoopTime = [NSTimer scheduledTimerWithTimeInterval:1
+                                                                target:self selector:@selector(udp_ipAddressMessageSend:)
+                                                              userInfo:nil
+                                                               repeats:YES];
+            [[NSRunLoop mainRunLoop] addTimer:self.runLoopTime forMode:NSRunLoopCommonModes];
+        }
+    });
 }
 /**
  *@description 向服务端发送消息
@@ -154,8 +162,13 @@ GCDAsyncSocketDelegate>
 /** 客户端发送获取ip地址广播 **/
 - (void)udp_ipAddressMessageSend:(NSTimer *)timer
 {
+    if (self.udpIPRequestCount > 3) {
+        [self stopRunloopTimer];
+        [self reTryHostBind];
+    }
     [self udp_sendMessage:@"请求ip" msgType:LxSocketSendMessageIpRequest];
     [[LxLogInterface sharedInstance] logWithStr:@"客户端发送一次ip请求"];
+    self.udpIPRequestCount ++;
 }
 /** 客户端发送tcp连接请求 **/
 - (void)tcp_connectRequest
@@ -269,10 +282,6 @@ GCDAsyncSocketDelegate>
     for (NSString *tempJsonStr in jsonArray) {
         NSMutableDictionary *msgInfo = [tempJsonStr lx_getDictionary];
         NSInteger msgType = [msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsgType]] integerValue];
-        for (NSString *key in msgInfo) {
-            NSString *value = msgInfo[key];
-            NSLog(@"接收到的消息中tcp = %@:%@：",[LxSocketHelper lx_socketKeyMsgWithType:[key integerValue]],value);
-        }
         NSString *message = msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsg]];
         NSString *fromID = msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoUserID]];
         self.lastMessageTimeStamp = [[NSDate date] timeIntervalSince1970];
@@ -281,10 +290,11 @@ GCDAsyncSocketDelegate>
             {
                 
                 if (self.delegate) {
+                    NSTimeInterval clientSendTime = [msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoSendTime]] floatValue];
                     [self.delegate receivedMessage:message
-                                            fromID:fromID];
+                                            fromID:fromID
+                     msgDelay:self.lastMessageTimeStamp - clientSendTime ];
                 }
-                 [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"接收到到消息%@ fromid = %@",message,fromID]];
             }
                 break;
             case LxSocketSendMessageClientIdRequest:
