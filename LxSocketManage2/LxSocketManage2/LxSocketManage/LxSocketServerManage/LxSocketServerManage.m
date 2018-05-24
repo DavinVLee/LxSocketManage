@@ -177,8 +177,15 @@ GCDAsyncSocketDelegate>
 /** 因socket绑定或初始化出问题后的延时重新绑定 **/
 - (void)reTryHostBind
 {
-    [self performSelector:@selector(lx_connectAsServerHostWithAvaliableClientModels:) withObject:nil afterDelay:LxSheartBeatTimeIntravl * 0.75];
-    [[LxLogInterface sharedInstance] logWithStr:@"重新进行一次连接"];
+    [self stopRunloopTimer];
+    [self tcp_disconnect];
+    [self udp_disconnect];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self performSelector:@selector(lx_connectAsServerHostWithAvaliableClientModels:) withObject:nil afterDelay:LxSheartBeatTimeIntravl * 0.75];
+        [[LxLogInterface sharedInstance] logWithStr:@"重新进行一次连接"];
+    });
+   
 }
 /** 关闭计时器 **/
 - (void)stopRunloopTimer
@@ -228,10 +235,13 @@ GCDAsyncSocketDelegate>
 #pragma mark - ********************  ClientModelAbout  ********************
 - (void)removeSocket:(GCDAsyncSocket *)socket
 {
+    [socket disconnect];
     if ([self.tempSocketArray containsObject:socket]) {
         [self.tempSocketArray removeObject:socket];
+    }else if (socket == self.tcpSocket)
+    {
+        [self reTryHostBind];
     }
-    [socket disconnect];
     for (LxSocketClientModel *client in self.allClientModels) {
         if ([[client.socket lx_objcAddress] isEqualToString:[socket lx_objcAddress]]) {
             client.socket = nil;

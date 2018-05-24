@@ -149,6 +149,7 @@ GCDAsyncSocketDelegate>
 /** 因socket绑定或初始化出问题后的延时重新绑定 **/
 - (void)reTryHostBind
 {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self stopRunloopTimer];
         [self tcp_disconnect];

@@ -157,6 +157,28 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="丢包次数" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="x5P-mc-Dbh">
+                                <rect key="frame" x="504" y="494" width="104" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="HB7-6m-zP9">
+                                <rect key="frame" x="510" y="526" width="92" height="38"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="只允许填入数字" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gfu-fN-DDc">
+                                <rect key="frame" x="31" y="169" width="104" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
@@ -165,6 +187,7 @@
                         <outlet property="heartBeatTextView" destination="JFc-5k-qAC" id="huv-aA-7Ho"/>
                         <outlet property="idTextFiled" destination="CEP-ac-4Ll" id="xm6-rw-jQ8"/>
                         <outlet property="lostConnectLabel" destination="gID-O8-6JP" id="Zlr-x8-67d"/>
+                        <outlet property="lostDataLabel" destination="HB7-6m-zP9" id="0BC-AI-gr6"/>
                         <outlet property="receiveMessageTextView" destination="6wf-f7-6FC" id="J2J-sV-ygq"/>
                         <outlet property="sendMessageTextFiled" destination="4G4-fk-qEd" id="MKI-bc-X4d"/>
                         <outlet property="sendMsgCountLabel" destination="REW-dA-VMA" id="VKh-qW-0gj"/>

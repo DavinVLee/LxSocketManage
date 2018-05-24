@@ -22,11 +22,14 @@
 @property (weak, nonatomic) IBOutlet UITextView *heartBeatTextView;
 @property (weak, nonatomic) IBOutlet UILabel *lostConnectLabel;
 @property (weak, nonatomic) IBOutlet UILabel *sendMsgCountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *lostDataLabel;
 #pragma mark - ********************  连接相关  ********************
 /** tcpsocket **/
 @property (strong, nonatomic) LxSocketServerManage *socketServerManage;
 /** udpsocket **/
 @property (strong, nonatomic) LxSocketClientManage *socketClientManage;
+/** 上一次消息的数值 **/
+@property (assign, nonatomic) NSInteger lastReceiveNumber;
 @end
 
 @implementation ViewController
@@ -75,9 +78,19 @@
     // Dispose of any resources that can be recreated.
 }
 #pragma mark - ********************  SocketDelegate  ********************
-- (void)receivedMessage:(NSString *)message fromID:(NSString *)fromID msgDelay:(NSTimeInterval)msgDelay
+- (void)receivedMessage:(NSString *)message
+                 fromID:(NSString *)fromID
+               msgDelay:(NSTimeInterval)msgDelay
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if ([message integerValue] - self.lastReceiveNumber == 1) {
+            
+        }else
+        {
+            self.lostDataLabel.text = [NSString stringWithFormat:@"%ld",[self.lostConnectLabel.text integerValue] + 1];
+        }
+        
         NSMutableString *text = [NSMutableString stringWithString:self.receiveMessageTextView.text];
         [text appendString:@"\n"];
         [text appendFormat:@"%@:",fromID];
@@ -158,6 +171,7 @@
 - (IBAction)sendMessageBtnClicked:(id)sender {
     
     self.sendMsgCountLabel.text = [NSString stringWithFormat:@"%ld",[self.sendMsgCountLabel.text integerValue] + 1];
+     self.sendMessageTextFiled.text = [NSString stringWithFormat:@"%ld",[self.sendMessageTextFiled.text integerValue] + 1];
     if (_socketServerManage) {
         [_socketServerManage lx_tcpSendMessage:self.sendMessageTextFiled.text
                                        msgSync:YES
@@ -174,6 +188,7 @@
     self.connectStatusTextView.text = @"";
     self.lostConnectLabel.text = @"0";
     self.sendMsgCountLabel.text = @"0";
+    self.lostDataLabel.text = @"0";
 }
 - (IBAction)autoSendClicked:(id)sender {
     [self clearReceiveMessageBtnClicked:nil];
@@ -187,7 +202,7 @@
 - (void)autoSend:(NSTimer *)timer
 {
     if ([self.sendMessageTextFiled.text integerValue] <1000) {
-        self.sendMessageTextFiled.text = [NSString stringWithFormat:@"%ld",[self.sendMessageTextFiled.text integerValue] + 1];
+       
         [self sendMessageBtnClicked:nil];
     }else
     {
