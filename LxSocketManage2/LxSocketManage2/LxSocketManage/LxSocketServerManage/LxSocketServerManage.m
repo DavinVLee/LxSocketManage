@@ -26,6 +26,8 @@ GCDAsyncSocketDelegate>
 @property (strong, nonatomic) NSMutableArray <LxSocketClientModel *>*allClientModels;
 /** 临时持有已连接、未确定的clientSocket **/
 @property (strong, nonatomic) NSMutableArray <GCDAsyncSocket *>*tempSocketArray;
+/** 存放socket.address -> clientModel **/
+@property (strong, nonatomic) NSMutableDictionary *socketAddToClientInfo;
 /****************************************************** dispatch ***************************************************************/
 /** udp广播队列 **/
 @property (strong, nonatomic) dispatch_queue_t udpQueue;
@@ -45,6 +47,7 @@ GCDAsyncSocketDelegate>
           _tcpDelegateQueue = dispatch_queue_create("tcpDelegateQueue", DISPATCH_QUEUE_SERIAL);
         _tcpQueue = dispatch_queue_create("tcpSocketQueue", DISPATCH_QUEUE_SERIAL);
         _udpQueue = dispatch_queue_create("udpSocketQueue", DISPATCH_QUEUE_SERIAL);
+        _socketAddToClientInfo = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -132,6 +135,7 @@ GCDAsyncSocketDelegate>
             [socket disconnect];
         }
     }
+    [self.socketAddToClientInfo removeAllObjects];
     
 }
 - (void)udp_disconnect
@@ -235,19 +239,20 @@ GCDAsyncSocketDelegate>
 #pragma mark - ********************  ClientModelAbout  ********************
 - (void)removeSocket:(GCDAsyncSocket *)socket
 {
+    LxSocketClientModel *client = [self clientWithSocket:socket];
+    if (client) {
+        [self updateClient:client connectStatus:LxSocketConnectLost];
+        client.socket = nil;
+        
+         [self.socketAddToClientInfo removeObjectForKey:[socket lx_objcAddress]];
+         [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"移除id:%@",client.clientID]];
+    }
     [socket disconnect];
     if ([self.tempSocketArray containsObject:socket]) {
         [self.tempSocketArray removeObject:socket];
     }else if (socket == self.tcpSocket)
     {
         [self reTryHostBind];
-    }
-    for (LxSocketClientModel *client in self.allClientModels) {
-        if ([[client.socket lx_objcAddress] isEqualToString:[socket lx_objcAddress]]) {
-            client.socket = nil;
-            client.connectStatus = LxSocketConnectLost;
-            [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"移除id:%@",client.clientID]];
-        }
     }
 }
 - (void)addSocket:(GCDAsyncSocket *)socket clientID:(NSString *)clientID
@@ -261,16 +266,35 @@ GCDAsyncSocketDelegate>
                 [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"新添加新的id有重复%@",client.clientID]];
             }
             client.socket = socket;
-            client.connectStatus = LxSocketConnected;
+            [self updateClient:client connectStatus:LxSocketConnected];
             client.lastTimeStamp = [[NSDate date] timeIntervalSince1970];
             [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"有新的id = %@加入",clientID]];
             if ([self.tempSocketArray containsObject:socket]) {
                 [self.tempSocketArray removeObject:socket];
             }
+            [self.socketAddToClientInfo setObject:client forKey:[socket lx_objcAddress]];
             break;
         }
     }
 
+}
+/** 获取socket对应client **/
+- (LxSocketClientModel *)clientWithSocket:(GCDAsyncSocket *)socket
+{
+    NSString *add = [socket lx_objcAddress];
+    if ([self.socketAddToClientInfo.allKeys containsObject:add]) {
+        return self.socketAddToClientInfo[add];
+    }
+    return nil;
+}
+/** 更新客户端连接状态 **/
+- (void)updateClient:(LxSocketClientModel *)client connectStatus:(LxSocketConnectStatus)connectStatus
+{
+    if (connectStatus != client.connectStatus) {
+//        NSLog(@"出现新的连接状态%ld  clientid:%@",connectStatus,client.clientID);
+          [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"sock%@   id = %@ 状态更换为%ld",client.socket,client.clientID,connectStatus]];
+        client.connectStatus = connectStatus;
+    }
 }
 #pragma mark - ********************  MessageSendAbout  ********************
 /** 服务端广播 **/
@@ -336,7 +360,7 @@ GCDAsyncSocketDelegate>
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket;
 {
     //    NSLog(@"收到新的连接%@ sock =%@",newSocket.localHost,[sock lx_objcAddress]);
-    [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"收到新的连接%@ sock =%@",newSocket.localHost,[sock lx_objcAddress]]];
+    [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"收到新的连接accept%@ sock =%@",newSocket.localHost,[sock lx_objcAddress]]];
     [sock readDataWithTimeout:-1 tag:0];
     if (![self.tempSocketArray containsObject:newSocket]) {
             [self.tempSocketArray addObject:newSocket];
@@ -378,6 +402,11 @@ GCDAsyncSocketDelegate>
         // NSLog(@"tcp接收到%@",tempJsonStr);
         NSString *message = msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoMsg]];
         NSString *fromID = msgInfo[[LxSocketHelper lx_strWithInfoKey:LxSocketInfoUserID]];
+        LxSocketClientModel *client = [self clientWithSocket:sock];
+        if (client) {
+            [self updateClient:client connectStatus:LxSocketConnected];
+            client.lastTimeStamp = [[NSDate date] timeIntervalSince1970];
+        }
         switch (msgType) {
             case LxSocketSendMessageNormal:
             {
@@ -400,16 +429,6 @@ GCDAsyncSocketDelegate>
                 [self tcp_sendMessage:@"回复心跳"
                               msgType:LxSocketSendMessageHeartReply
                               sockets:@[sock]];
-                for (LxSocketClientModel *client in self.allClientModels) {
-                    if ([fromID isEqualToString:client.clientID]) {
-                        client.lastTimeStamp = [[NSDate date] timeIntervalSince1970];
-                        if (client.connectStatus != LxSocketConnected) {
-//                            NSLog(@"sock%@   id = %@由未连接转为连接",sock,fromID);
-                            [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"sock%@   id = %@由未连接转为连接",sock,fromID]];
-                        }
-                        client.connectStatus = LxSocketConnected;
-                    }
-                }
 //                if (self.delegate) {
 //                    [self.delegate receiveHeartBeat:message fromID:fromID];
 //                }
