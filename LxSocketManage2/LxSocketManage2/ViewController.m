@@ -90,7 +90,7 @@
         {
             self.lostDataLabel.text = [NSString stringWithFormat:@"%ld",[self.lostConnectLabel.text integerValue] + 1];
         }
-        
+        self.lastReceiveNumber = [message integerValue];
         NSMutableString *text = [NSMutableString stringWithString:self.receiveMessageTextView.text];
         [text appendString:@"\n"];
         [text appendFormat:@"%@:",fromID];
@@ -189,6 +189,7 @@
     self.lostConnectLabel.text = @"0";
     self.sendMsgCountLabel.text = @"0";
     self.lostDataLabel.text = @"0";
+    self.lastReceiveNumber = 0;
 }
 - (IBAction)autoSendClicked:(id)sender {
     [self clearReceiveMessageBtnClicked:nil];

@@ -256,13 +256,14 @@ GCDAsyncSocketDelegate>
     for (LxSocketClientModel *client in self.allClientModels) {
         if ([client.clientID isEqualToString:clientID]) {
             if (client.socket &&
-                ![[client.socket lx_objcAddress] isEqualToString:[socket lx_objcAddress]]) {/** 预防新连接与旧连接为同一id **/
+                ![[client.socket lx_objcAddress] isEqualToString:[socket lx_objcAddress]]) {/** 预防新连接与旧连接为不同长连接 **/
                 [client.socket disconnect];
+                [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"新添加新的id有重复%@",client.clientID]];
             }
             client.socket = socket;
             client.connectStatus = LxSocketConnected;
             client.lastTimeStamp = [[NSDate date] timeIntervalSince1970];
-            
+            [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"有新的id = %@加入",clientID]];
             if ([self.tempSocketArray containsObject:socket]) {
                 [self.tempSocketArray removeObject:socket];
             }
