@@ -109,6 +109,18 @@ GCDAsyncSocketDelegate>
 {
     [self tcp_sendMessage:message msgType:LxSocketSendMessageNormal];
 }
+/**
+ *@description 清空并关闭
+ **/
+- (void)reClearSet
+{
+    [self udp_disconnect];
+    [self tcp_disconnect];
+    self.tcpQueue = nil;
+    self.udpQueue = nil;
+    self.tcpDelegateQueue = nil;
+    self.delegate = nil;
+}
 #pragma mark - ********************  function ********************
 - (void)tcp_disconnect
 {

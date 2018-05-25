@@ -16,6 +16,7 @@
 #import "NSString+Helper.h"
 #import "IPAddressManage.h"
 #import "LxSocketClientModel.h"
+
 @interface LxSocketServerManage()<GCDAsyncUdpSocketDelegate,
 GCDAsyncSocketDelegate>
 /** TCP连接对象 **/
@@ -120,22 +121,33 @@ GCDAsyncSocketDelegate>
         }
     }
 }
+/**
+ *@description 清空并关闭
+ **/
+- (void)reClearSet
+{
+    [self udp_disconnect];
+    [self tcp_disconnect];
+    self.tcpQueue = nil;
+    self.udpQueue = nil;
+    self.tcpDelegateQueue = nil;
+    self.delegate = nil;
+}
 #pragma mark - ********************  Function  ********************
 - (void)tcp_disconnect
 {
     [self stopRunloopTimer];
     /** 提前关闭连接 **/
     if (_tcpSocket) {
-        
         _tcpSocket.delegate = nil;
         [_tcpSocket disconnect];
         _tcpSocket = nil;
-         [self.tempSocketArray removeAllObjects];
-        for (GCDAsyncSocket *socket in self.tempSocketArray) {
-            [socket disconnect];
-        }
+    }
+    for (GCDAsyncSocket *socket in self.tempSocketArray) {
+        [socket disconnect];
     }
     [self.socketAddToClientInfo removeAllObjects];
+    [self.tempSocketArray removeAllObjects];
     
 }
 - (void)udp_disconnect
@@ -299,8 +311,11 @@ GCDAsyncSocketDelegate>
 {
     if (connectStatus != client.connectStatus) {
 //        NSLog(@"出现新的连接状态%ld  clientid:%@",connectStatus,client.clientID);
-          [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"sock%@   id = %@ 状态更换为%ld",client.socket,client.clientID,connectStatus]];
+          [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"sock%@   id = %@ 状态更换为%ld",client.socket,client.clientID,(long)connectStatus]];
         client.connectStatus = connectStatus;
+        if ([self.delegate respondsToSelector:@selector(updateConnectStatusWithClient:)]) {
+            [self.delegate updateConnectStatusWithClient:client];
+        }
     }
 }
 #pragma mark - ********************  MessageSendAbout  ********************
@@ -380,7 +395,7 @@ GCDAsyncSocketDelegate>
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port;
 {
     //    NSLog(@"收到新的连接:%@,port = %d sock = %p",host,port,sock);
-    [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"收到新的连接:%@,port = %d sock = %p",host,port,sock]];
+    [[LxLogInterface sharedInstance] logWithStr:[NSString stringWithFormat:@"收到新的连接:%@,port = %ld sock = %p",host,(long)port,sock]];
 }
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err

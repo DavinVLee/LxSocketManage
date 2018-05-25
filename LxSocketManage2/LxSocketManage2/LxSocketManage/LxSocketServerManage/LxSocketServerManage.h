@@ -32,4 +32,8 @@
                   msgSync:(BOOL)msgSync
             auxiliaryInfo:(NSDictionary *)auxiliaryInfo
              specialDesID:(NSArray <NSString *>*)specialDesID;
+/**
+ *@description 清空并关闭
+ **/
+- (void)reClearSet;
 @end

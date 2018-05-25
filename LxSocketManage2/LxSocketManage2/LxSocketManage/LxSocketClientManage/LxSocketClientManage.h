@@ -20,4 +20,8 @@
  *@description 向服务端发送消息
  **/
 - (void)lx_tcpSendMessage:(NSString *)message;
+/**
+ *@description 清空并关闭
+ **/
+- (void)reClearSet;
 @end

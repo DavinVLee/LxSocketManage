@@ -14,7 +14,7 @@
 #define LxSudp_port 9999
 /** 心跳包发送间隔 **/
 #define LxSheartBeatTimeIntravl 2.f
-
+@class LxSocketClientModel;
 @protocol LxsocketDelegate <NSObject>
 @optional
 /**
@@ -30,6 +30,8 @@
 - (void)sentMsgCountOnce;
 /** tcp连接掉线一次 **/
 - (void)tcpConnectLost;
+/** 客户端状态改变 **/
+- (void)updateConnectStatusWithClient:(LxSocketClientModel *)client;
 
 @end
 
